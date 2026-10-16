@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inspire From Zero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky module index beside a single reading column; index becomes a scrolling strip on phones.
+   Palette: ink-blue text, slate paper, one teal accent, amber reserved for "the thing to notice". */
+:root{
+  --bg:#f4f7f9; --panel:#ffffff; --fg:#14202b; --muted:#546677; --line:#d5dee6;
+  --accent:#0b6e8a; --accent-soft:#dff0f5; --mark:#b45f00; --mark-soft:#fbeedb; --code:#eaf0f4;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1820; --panel:#16232e; --fg:#e4edf3; --muted:#9bb0bf; --line:#2a3b49;
+  --accent:#4cc3e3; --accent-soft:#16323d; --mark:#f0a64a; --mark-soft:#35291a; --code:#1b2b37; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1820; --panel:#16232e; --fg:#e4edf3; --muted:#9bb0bf; --line:#2a3b49;
+  --accent:#4cc3e3; --accent-soft:#16323d; --mark:#f0a64a; --mark-soft:#35291a; --code:#1b2b37; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.65 var(--body);padding-inline:16px;padding-block:0}
+a{color:var(--accent)}
+.shell{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:48px;padding-block:32px 80px}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;font-size:14px}
+nav.toc h2{font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+nav.toc a{display:block;padding:5px 10px;border-radius:6px;text-decoration:none;color:var(--fg)}
+nav.toc a:hover{background:var(--accent-soft)}
+.prog{margin-top:18px;font:12px var(--mono);color:var(--muted)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent)}
+main{min-width:0}
+header.top{padding-bottom:28px;border-bottom:1px solid var(--line);margin-bottom:8px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(2.2rem,5vw,3.4rem)/1.05 var(--display);margin:8px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+h2.m{font:700 clamp(1.5rem,3vw,2rem)/1.15 var(--display);margin:0 0 6px;text-wrap:balance}
+h3{font:600 1.1rem/1.3 var(--display);margin:28px 0 6px}
+.lede{font-size:1.1rem;color:var(--muted);max-width:62ch;margin:0}
+section{padding-block:44px 8px;border-bottom:1px solid var(--line);scroll-margin-top:12px}
+section>p,section>ul,section>ol{max-width:68ch}
+.tag{display:inline-block;font:500 12px var(--mono);color:var(--muted);margin-bottom:6px}
+ul,ol{padding-left:1.2em}li{margin:4px 0}
+code{font:0.9em var(--mono);background:var(--code);padding:1px 6px;border-radius:4px}
+pre{background:var(--code);padding:14px 16px;border-radius:8px;overflow-x:auto;font:13px/1.55 var(--mono);margin:12px 0}
+pre code{background:none;padding:0}
+figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 14px 10px}
+figure .sv{overflow-x:auto}
+figure svg{display:block;width:100%;min-width:560px;height:auto;color:var(--fg)}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px;max-width:70ch}
+svg text{font:12.5px var(--body);fill:currentColor}
+svg .s{font-size:11px;fill:var(--muted)}
+svg .b{font-weight:600}
+svg .mono{font-family:var(--mono);font-size:11.5px}
+svg .box{fill:var(--panel);stroke:currentColor;stroke-width:1.3}
+svg .acc{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .mk{fill:var(--mark-soft);stroke:var(--mark);stroke-width:1.5}
+svg .ln{stroke:currentColor;stroke-width:1.3;fill:none}
+svg .dash{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3;fill:none}
+svg .page{fill:var(--panel);stroke:currentColor;stroke-width:1.5}
+svg .ph{fill:var(--code);stroke:var(--muted);stroke-width:1}
+.note{background:var(--mark-soft);border-left:4px solid var(--mark);padding:12px 16px;border-radius:0 8px 8px 0;margin:18px 0;max-width:70ch;font-size:15px}
+.note b{color:var(--mark)}
+.goal{background:var(--accent-soft);padding:12px 16px;border-radius:8px;margin:14px 0;max-width:70ch;font-size:15px}
+.goal b{color:var(--accent)}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:20px 0;max-width:70ch}
+.ex h4{margin:0 0 6px;font:600 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.ex label{display:flex;gap:10px;align-items:flex-start;margin:6px 0;cursor:pointer;font-size:15px}
+.ex input{margin-top:5px;accent-color:var(--accent);flex:none}
+.tw{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:14.5px;background:var(--panel)}
+th,td{text-align:left;padding:9px 12px;border:1px solid var(--line);vertical-align:top}
+th{background:var(--accent-soft);font-weight:600}
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0;max-width:70ch}
+summary{cursor:pointer;font-weight:500}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:16px;padding-block:20px 60px}
+  nav.toc{position:static}
+  nav.toc ol{flex-direction:row;overflow-x:auto;padding-bottom:6px;gap:6px}
+  nav.toc a{white-space:nowrap;background:var(--panel);border:1px solid var(--line)}
+}
+</style>
+
+<div class="shell">
+<nav class="toc" aria-label="Modules">
+  <h2>Modules</h2>
+  <ol>
+    <li><a href="#m0">0 · Roadmap</a></li>
+    <li><a href="#m1">1 · Concepts</a></li>
+    <li><a href="#m2">2 · Product map</a></li>
+    <li><a href="#m3">3 · Data</a></li>
+    <li><a href="#m4">4 · Layout</a></li>
+    <li><a href="#m5">5 · Logic</a></li>
+    <li><a href="#m6">6 · Workflow</a></li>
+    <li><a href="#m7">7 · Production</a></li>
+    <li><a href="#m8">8 · Interactive</a></li>
+    <li><a href="#m9">9 · Quality</a></li>
+    <li><a href="#m10">10 · Expert path</a></li>
+    <li><a href="#gloss">Glossary</a></li>
+  </ol>
+  <div class="prog" id="prog">Exercises done: 0</div>
+  <div class="bar"><i id="barfill"></i></div>
+</nav>
+
+<main>
+<header class="top">
+  <div class="eyebrow">Self-study course · text and diagrams</div>
+  <h1>Inspire From Zero</h1>
+  <p class="lede">A path from no knowledge of Quadient Inspire to working confidently on real projects. Eleven short modules, each with a goal, a diagram, and hands-on exercises.</p>
+  <div class="note"><b>Read this first.</b> The diagrams are concept drawings I made, not screenshots of the product. Menu names, component names and features differ between Inspire versions (Designer, Evolve, cloud editions). Treat this course as the map and your own environment and Quadient's documentation as the ground truth. Where I am unsure of an exact term, I say so.</div>
+</header>
+
+<section id="m0">
+  <span class="tag">MODULE 0</span>
+  <h2 class="m">Roadmap: how to become good at this</h2>
+  <p>You cannot learn Inspire from reading alone. It is a tool you build things in. The plan below assumes you can get a sandbox or trial from your employer, client, or Quadient. Without access you can finish modules 1 and 2 and prepare for the rest.</p>
+  <figure>
+    <div class="sv"><svg viewBox="0 0 780 210" role="img" aria-label="Five learning phases over about twelve weeks, from concepts to expert level">
+      <line class="ln" x1="30" y1="70" x2="750" y2="70"/>
+      <g>
+        <circle class="acc" cx="70" cy="70" r="11"/><circle class="acc" cx="225" cy="70" r="11"/><circle class="acc" cx="380" cy="70" r="11"/><circle class="acc" cx="535" cy="70" r="11"/><circle class="mk" cx="690" cy="70" r="11"/>
+      </g>
+      <text class="b" x="70" y="38" text-anchor="middle">Weeks 1–2</text>
+      <text class="b" x="225" y="38" text-anchor="middle">Weeks 3–4</text>
+      <text class="b" x="380" y="38" text-anchor="middle">Weeks 5–7</text>
+      <text class="b" x="535" y="38" text-anchor="middle">Weeks 8–10</text>
+      <text class="b" x="690" y="38" text-anchor="middle">Week 11+</text>
+      <text x="70" y="106" text-anchor="middle">Concepts</text><text class="s" x="70" y="122" text-anchor="middle">modules 1–2</text>
+      <text x="225" y="106" text-anchor="middle">Data + layout</text><text class="s" x="225" y="122" text-anchor="middle">modules 3–4</text>
+      <text x="380" y="106" text-anchor="middle">Logic + workflow</text><text class="s" x="380" y="122" text-anchor="middle">modules 5–6</text>
+      <text x="535" y="106" text-anchor="middle">Production</text><text class="s" x="535" y="122" text-anchor="middle">modules 7–9</text>
+      <text x="690" y="106" text-anchor="middle">Expert</text><text class="s" x="690" y="122" text-anchor="middle">module 10</text>
+      <text class="s" x="70" y="160" text-anchor="middle">can explain it</text>
+      <text class="s" x="225" y="160" text-anchor="middle">can build a letter</text>
+      <text class="s" x="380" y="160" text-anchor="middle">can build a full job</text>
+      <text class="s" x="535" y="160" text-anchor="middle">can run and test it</text>
+      <text class="s" x="690" y="160" text-anchor="middle">can design solutions</text>
+    </svg></div>
+    <figcaption>Roughly 6–8 hours a week. The pace is a guess; a person who already knows scripting and XML will go faster.</figcaption>
+  </figure>
+  <h3>Skills that make you faster</h3>
+  <ul>
+    <li><b>Data formats:</b> XML, JSON, CSV and fixed-width files. Most of your time goes into data.</li>
+    <li><b>Basic programming:</b> variables, loops, conditions, functions. Inspire scripting is JavaScript-like.</li>
+    <li><b>Document basics:</b> fonts, margins, tables, PDF, print terms such as duplex and bleed.</li>
+    <li><b>SQL and web basics</b> help later for databases and REST APIs.</li>
+  </ul>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="0a"> Ask your team or client for sandbox access, a sample project, and the Quadient learning portal login.</label>
+    <label><input type="checkbox" data-k="0b"> Pick one real document you receive (a bank statement, an insurance letter). You will rebuild it step by step through this course.</label>
+  </div>
+</section>
+
+<section id="m1">
+  <span class="tag">MODULE 1</span>
+  <h2 class="m">Concepts: what problem Inspire solves</h2>
+  <div class="goal"><b>Goal.</b> Explain customer communications management (CCM) to a colleague in two minutes.</div>
+  <p>A company holds data about customers in many systems. It must turn that data into millions of correct, branded, legally safe documents: bills, statements, policy packs, collection letters. That job is customer communications management. Inspire is Quadient's CCM platform.</p>
+  <figure>
+    <div class="sv"><svg viewBox="0 0 780 230" role="img" aria-label="Data from business systems flows through mapping and a template into output channels">
+      <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect class="box" x="10" y="20" width="130" height="38" rx="6"/><text x="75" y="43" text-anchor="middle">CRM</text>
+      <rect class="box" x="10" y="96" width="130" height="38" rx="6"/><text x="75" y="119" text-anchor="middle">Billing system</text>
+      <rect class="box" x="10" y="172" width="130" height="38" rx="6"/><text x="75" y="195" text-anchor="middle">Mainframe file</text>
+      <path class="ln" d="M140 39 L190 105" marker-end="url(#a1)"/><path class="ln" d="M140 115 L190 115" marker-end="url(#a1)"/><path class="ln" d="M140 191 L190 125" marker-end="url(#a1)"/>
+      <rect class="acc" x="192" y="86" width="130" height="58" rx="8"/><text class="b" x="257" y="112" text-anchor="middle">Data mapping</text><text class="s" x="257" y="128" text-anchor="middle">raw data → clean model</text>
+      <path class="ln" d="M322 115 L368 115" marker-end="url(#a1)"/>
+      <rect class="acc" x="370" y="86" width="130" height="58" rx="8"/><text class="b" x="435" y="112" text-anchor="middle">Template</text><text class="s" x="435" y="128" text-anchor="middle">layout + rules</text>
+      <path class="ln" d="M500 115 L548 115" marker-end="url(#a1)"/>
+      <rect class="mk" x="550" y="86" width="100" height="58" rx="8"/><text class="b" x="600" y="112" text-anchor="middle">Output</text><text class="s" x="600" y="128" text-anchor="middle">engine</text>
+      <path class="ln" d="M650 100 L700 36" marker-end="url(#a1)"/><path class="ln" d="M650 115 L700 115" marker-end="url(#a1)"/><path class="ln" d="M650 130 L700 194" marker-end="url(#a1)"/>
+      <rect class="box" x="702" y="18" width="68" height="36" rx="6"/><text x="736" y="40" text-anchor="middle">Print</text>
+      <rect class="box" x="702" y="97" width="68" height="36" rx="6"/><text x="736" y="119" text-anchor="middle">PDF</text>
+      <rect class="box" x="702" y="176" width="68" height="36" rx="6"/><text x="736" y="198" text-anchor="middle">Email</text>
+    </svg></div>
+    <figcaption>The whole idea in one picture. Everything in Inspire belongs somewhere on this line: get data, shape it, apply a template, produce output.</figcaption>
+  </figure>
+  <h3>Vocabulary to learn now</h3>
+  <ul>
+    <li><b>Batch vs real-time:</b> a nightly run of 2 million statements, versus one letter produced when a customer clicks a button.</li>
+    <li><b>Omnichannel:</b> one content source, many channels.</li>
+    <li><b>Variable data:</b> the document changes per person (name, balance, which paragraphs appear).</li>
+    <li><b>Transactional documents:</b> documents triggered by a customer event or account activity, as opposed to marketing mail.</li>
+    <li><b>Composition:</b> the act of merging data with a template to produce a document.</li>
+  </ul>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="1a"> Write three sentences explaining CCM without using the word "template".</label>
+    <label><input type="checkbox" data-k="1b"> On your chosen real document, mark every part that is fixed, every part that comes from data, and every part that appears only sometimes.</label>
+  </div>
+</section>
+
+<section id="m2">
+  <span class="tag">MODULE 2</span>
+  <h2 class="m">Product map: the parts of Inspire</h2>
+  <div class="goal"><b>Goal.</b> Know which component does what, so you know where to look when something breaks.</div>
+  <p>Inspire is a family of components. Names and packaging have changed over the years, so confirm the exact list in your version.</p>
+  <figure>
+    <div class="sv"><svg viewBox="0 0 780 290" role="img" aria-label="Design tools feed a production server, which is triggered by batch files, APIs or interactive users">
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect class="dash" x="10" y="10" width="230" height="270" rx="10"/><text class="s" x="24" y="30">DESIGN TIME</text>
+      <rect class="acc" x="30" y="50" width="190" height="64" rx="8"/><text class="b" x="125" y="76" text-anchor="middle">Designer</text><text class="s" x="125" y="94" text-anchor="middle">build data models, layouts, flows</text>
+      <rect class="box" x="30" y="140" width="190" height="52" rx="8"/><text class="b" x="125" y="164" text-anchor="middle">Content management</text><text class="s" x="125" y="180" text-anchor="middle">shared text, clauses, images</text>
+      <rect class="box" x="30" y="212" width="190" height="52" rx="8"/><text class="b" x="125" y="236" text-anchor="middle">Project / package</text><text class="s" x="125" y="252" text-anchor="middle">what gets deployed</text>
+      <path class="ln" d="M240 150 L300 150" marker-end="url(#a2)"/><text class="s" x="270" y="140" text-anchor="middle">deploy</text>
+      <rect class="dash" x="300" y="10" width="250" height="270" rx="10"/><text class="s" x="314" y="30">RUN TIME</text>
+      <rect class="mk" x="320" y="70" width="210" height="140" rx="10"/><text class="b" x="425" y="108" text-anchor="middle">Production server</text><text class="s" x="425" y="128" text-anchor="middle">(Scaler / Automation)</text>
+      <text class="s" x="425" y="156" text-anchor="middle">runs the jobs, scales out,</text><text class="s" x="425" y="172" text-anchor="middle">queues, logs, reports</text>
+      <rect class="box" x="590" y="20" width="170" height="44" rx="6"/><text x="675" y="40" text-anchor="middle">Batch file arrives</text><text class="s" x="675" y="55" text-anchor="middle">nightly, scheduled</text>
+      <rect class="box" x="590" y="100" width="170" height="44" rx="6"/><text x="675" y="120" text-anchor="middle">REST / web service call</text><text class="s" x="675" y="135" text-anchor="middle">from another app</text>
+      <rect class="box" x="590" y="180" width="170" height="44" rx="6"/><text x="675" y="200" text-anchor="middle">Interactive user</text><text class="s" x="675" y="215" text-anchor="middle">agent edits a letter</text>
+      <path class="ln" d="M590 42 L534 100" marker-end="url(#a2)"/><path class="ln" d="M590 122 L534 140" marker-end="url(#a2)"/><path class="ln" d="M590 202 L534 180" marker-end="url(#a2)"/>
+    </svg></div>
+    <figcaption>Design time is where you build. Run time is where documents are produced. Many beginner mistakes come from testing in the designer and forgetting production behaves differently.</figcaption>
+  </figure>
+  <div class="tw"><table>
+    <tr><th>Component</th><th>Used for</th><th>Who uses it</th></tr>
+    <tr><td>Designer</td><td>Data modeling, mapping, layout, scripts, workflows</td><td>Developers</td></tr>
+    <tr><td>Production server (Scaler / Automation)</td><td>Running jobs in batch or real time at volume</td><td>Developers, ops</td></tr>
+    <tr><td>Interactive</td><td>Letting staff create or edit communications with approved content</td><td>Business users</td></tr>
+    <tr><td>Content management</td><td>Reusable, approved text blocks and assets</td><td>Business owners, legal</td></tr>
+    <tr><td>Cloud edition (Evolve)</td><td>Cloud-native design and delivery, newer web-based tooling</td><td>Teams on the cloud platform</td></tr>
+  </table></div>
+  <div class="note"><b>Check your version.</b> Older projects use the classic Designer. Newer ones may use the cloud edition with different screens. Ask which one your project uses before you start any tutorial.</div>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="2a"> Find out which edition and version your project uses.</label>
+    <label><input type="checkbox" data-k="2b"> Open the product docs and list the components your project actually has installed.</label>
+  </div>
+</section>
+
+<section id="m3">
+  <span class="tag">MODULE 3</span>
+  <h2 class="m">Data: models, input and mapping</h2>
+  <div class="goal"><b>Goal.</b> Read an input file, define a data model, and map fields into it.</div>
+  <p>Data work is most of the job. Source files are messy: odd field names, repeating groups, dates in three formats. Inspire lets you define a clean <b>data model</b> (the shape your template wants) and <b>map</b> the raw input into it. The template then only knows the clean model.</p>
+  <figure>
+    <div class="sv"><svg viewBox="0 0 780 260" role="img" aria-label="Raw input record on the left is mapped to a clean data model on the right">
+      <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect class="box" x="10" y="20" width="270" height="220" rx="8"/><text class="b" x="24" y="42">Raw input (CSV / XML / flat file)</text>
+      <text class="mono" x="24" y="72">CUSTNO=10492</text>
+      <text class="mono" x="24" y="96">NM=SMITH,ANA</text>
+      <text class="mono" x="24" y="120">BAL=00124550</text>
+      <text class="mono" x="24" y="144">DUE=20261115</text>
+      <text class="mono" x="24" y="168">LINE=Hosting|49.00</text>
+      <text class="mono" x="24" y="192">LINE=Support|75.50</text>
+      <path class="ln" d="M280 130 L350 130" marker-end="url(#a3)"/><text class="s" x="315" y="120" text-anchor="middle">map</text><text class="s" x="315" y="150" text-anchor="middle">+ clean</text>
+      <rect class="acc" x="352" y="20" width="270" height="220" rx="8"/><text class="b" x="366" y="42">Data model</text>
+      <text class="mono" x="366" y="72">Customer</text>
+      <text class="mono" x="380" y="94">id : string</text>
+      <text class="mono" x="380" y="116">fullName : "Ana Smith"</text>
+      <text class="mono" x="380" y="138">balance : 1245.50</text>
+      <text class="mono" x="380" y="160">dueDate : 2026-11-15</text>
+      <text class="mono" x="380" y="182">Invoice.Lines[ ] : repeats</text>
+      <text class="s" x="366" y="214">types, order and nesting you choose</text>
+      <rect class="mk" x="650" y="90" width="120" height="80" rx="8"/><text class="b" x="710" y="124" text-anchor="middle">Template</text><text class="s" x="710" y="144" text-anchor="middle">uses model only</text>
+      <path class="ln" d="M622 130 L648 130" marker-end="url(#a3)"/>
+    </svg></div>
+    <figcaption>The raw record has cryptic names, a name in "SURNAME,FIRST" form, an amount in cents with leading zeros, and a date without separators. The mapping fixes all of that once, so every template benefits.</figcaption>
+  </figure>
+  <h3>Things to learn</h3>
+  <ul>
+    <li>How the designer reads each input type: delimited text, fixed-width, XML, JSON, database queries.</li>
+    <li>How to define fields, types, and repeating groups (a customer has many invoice lines).</li>
+    <li>How to split one big input file into one record per customer (often called a record or document boundary).</li>
+    <li>Handling bad data: missing values, odd characters, empty groups.</li>
+  </ul>
+  <div class="note"><b>Beginner trap.</b> Putting formatting fixes (dates, currency, name casing) inside the layout instead of the mapping. It works until a second template needs the same fix.</div>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="3a"> Create a CSV with 5 customers and 2–3 invoice lines each. Define a matching data model.</label>
+    <label><input type="checkbox" data-k="3b"> Map it, then check a record in the data preview.</label>
+    <label><input type="checkbox" data-k="3c"> Add one deliberately bad record (missing balance). See what happens and decide how to handle it.</label>
+  </div>
+</section>
+
+<section id="m4">
+  <span class="tag">MODULE 4</span>
+  <h2 class="m">Layout: pages, flows and content</h2>
+  <div class="goal"><b>Goal.</b> Build a two-page, branded letter with an address block, a variable-length table and a footer.</div>
+  <p>Layout is where the document takes shape. The core challenge is that content length varies: one customer has 3 invoice lines, another has 80. The layout must grow gracefully, flow to extra pages, and keep headers and footers right.</p>
+  <figure>
+    <div class="sv"><svg viewBox="0 0 780 360" role="img" aria-label="A page with fixed regions, a flowing content area and a footer, each labeled">
+      <rect class="page" x="250" y="10" width="250" height="340" rx="3"/>
+      <rect class="ph" x="266" y="24" width="90" height="34" rx="2"/><text class="s" x="311" y="45" text-anchor="middle">logo</text>
+      <rect class="mk" x="266" y="76" width="130" height="52" rx="2"/><text class="s" x="331" y="105" text-anchor="middle">address window</text>
+      <rect class="acc" x="266" y="146" width="218" height="140" rx="2"/>
+      <text class="s" x="375" y="170" text-anchor="middle">flowing body</text>
+      <line class="dash" x1="276" y1="184" x2="474" y2="184"/><line class="dash" x1="276" y1="200" x2="474" y2="200"/><line class="dash" x1="276" y1="216" x2="474" y2="216"/><line class="dash" x1="276" y1="232" x2="440" y2="232"/>
+      <text class="s" x="375" y="262" text-anchor="middle">…continues on next page</text>
+      <rect class="ph" x="266" y="304" width="218" height="30" rx="2"/><text class="s" x="375" y="323" text-anchor="middle">footer · page 1 of 2</text>
+      <path class="ln" d="M240 40 L190 40"/><text x="184" y="44" text-anchor="end">Fixed image from resources</text>
+      <path class="ln" d="M240 102 L190 102"/><text x="184" y="106" text-anchor="end">Must line up with the envelope window</text>
+      <path class="ln" d="M240 216 L190 216"/><text x="184" y="220" text-anchor="end">Text + table that grows</text>
+      <path class="ln" d="M240 320 L190 320"/><text x="184" y="324" text-anchor="end">Page numbers, legal line</text>
+      <path class="ln" d="M510 102 L560 102"/><text x="566" y="98">Data: name, street, city</text><text class="s" x="566" y="114">often validated and formatted</text>
+      <path class="ln" d="M510 216 L560 216"/><text x="566" y="212">Rules: which paragraphs show</text><text class="s" x="566" y="228">depends on the customer's data</text>
+      <path class="ln" d="M510 320 L560 320"/><text x="566" y="316">Master page</text><text class="s" x="566" y="332">repeats on every page</text>
+    </svg></div>
+    <figcaption>One page, labeled by role. The body area is the part that "flows"; everything else is positioned or repeated. Window position and margins are physical print rules, so check them against the real envelope spec.</figcaption>
+  </figure>
+  <h3>Skills in this module</h3>
+  <ul>
+    <li><b>Pages and master pages</b> for things that repeat (logo, footer).</li>
+    <li><b>Flowing text and tables</b> that break across pages with repeating header rows.</li>
+    <li><b>Paragraph and character styles.</b> Always style through named styles, never by hand on each paragraph.</li>
+    <li><b>Images, barcodes, QR codes,</b> and fonts as resources.</li>
+    <li><b>Conditional content:</b> show this paragraph only when the balance is overdue.</li>
+    <li><b>Print awareness:</b> margins, duplex, bleed, and mail sorting marks, if you do print.</li>
+  </ul>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="4a"> Build page 1 with logo, address and a greeting using the customer name.</label>
+    <label><input type="checkbox" data-k="4b"> Add an invoice table. Test with 2 lines and with 60 lines. Fix the page break.</label>
+    <label><input type="checkbox" data-k="4c"> Add a footer with "Page X of Y".</label>
+    <label><input type="checkbox" data-k="4d"> Create paragraph styles for heading, body and small print. Use only these.</label>
+  </div>
+</section>
+
+<section id="m5">
+  <span class="tag">MODULE 5</span>
+  <h2 class="m">Logic: conditions, rules and scripting</h2>
+  <div class="goal"><b>Goal.</b> Make one template produce different documents for different customers, with logic you can read six months later.</div>
+  <p>Personalization is the reason the product exists. Some logic is point-and-click (show/hide a block when a field equals a value). Harder logic needs scripting. Inspire scripting is JavaScript-like with product-specific objects for data, text and layout. Check your version's scripting reference for the exact object names.</p>
+  <figure>
+    <div class="sv"><svg viewBox="0 0 780 250" role="img" aria-label="One template with a conditional block produces two different letters from two records">
+      <defs><marker id="a5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect class="box" x="10" y="20" width="150" height="80" rx="6"/><text class="b" x="24" y="42">Record A</text><text class="mono" x="24" y="62">balance: 0.00</text><text class="mono" x="24" y="80">segment: gold</text>
+      <rect class="box" x="10" y="140" width="150" height="80" rx="6"/><text class="b" x="24" y="162">Record B</text><text class="mono" x="24" y="182">balance: 245.50</text><text class="mono" x="24" y="200">segment: standard</text>
+      <path class="ln" d="M160 60 L250 105" marker-end="url(#a5)"/><path class="ln" d="M160 180 L250 135" marker-end="url(#a5)"/>
+      <rect class="acc" x="252" y="40" width="190" height="170" rx="8"/><text class="b" x="347" y="64" text-anchor="middle">One template</text>
+      <text class="s" x="347" y="90" text-anchor="middle">Always: greeting + summary</text>
+      <rect class="mk" x="266" y="104" width="162" height="34" rx="4"/><text class="s" x="347" y="125" text-anchor="middle">IF balance &gt; 0 → payment block</text>
+      <rect class="mk" x="266" y="146" width="162" height="34" rx="4"/><text class="s" x="347" y="167" text-anchor="middle">IF segment = gold → offer</text>
+      <path class="ln" d="M442 95 L530 60" marker-end="url(#a5)"/><path class="ln" d="M442 155 L530 190" marker-end="url(#a5)"/>
+      <rect class="box" x="532" y="14" width="238" height="90" rx="6"/><text class="b" x="546" y="36">Letter for A</text><text class="s" x="546" y="58">Greeting, summary</text><text class="s" x="546" y="76">Gold-member offer</text><text class="s" x="546" y="94">(no payment block)</text>
+      <rect class="box" x="532" y="146" width="238" height="90" rx="6"/><text class="b" x="546" y="168">Letter for B</text><text class="s" x="546" y="190">Greeting, summary</text><text class="s" x="546" y="208">Payment block with amount due</text><text class="s" x="546" y="226">(no offer)</text>
+    </svg></div>
+    <figcaption>The template holds all possible content. The data decides what appears. A reviewer should be able to read the conditions and know why a given letter came out as it did.</figcaption>
+  </figure>
+  <h3>Pseudo-code of the idea</h3>
+<pre><code>// Not exact Inspire syntax: shows the shape of the logic
+if (customer.balance &gt; 0) {
+    showBlock("PaymentReminder");
+    setField("AmountDue", format(customer.balance, "#,##0.00"));
+}
+if (customer.segment == "gold") {
+    showBlock("LoyaltyOffer");
+}</code></pre>
+  <ul>
+    <li>Name blocks and variables clearly. Future you is the reader.</li>
+    <li>Keep business rules in one place, not scattered across ten layout objects.</li>
+    <li>Learn the debugger and logging features of your version early.</li>
+  </ul>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="5a"> Add a payment block that shows only when balance &gt; 0.</label>
+    <label><input type="checkbox" data-k="5b"> Format currency and dates in one reusable function or script.</label>
+    <label><input type="checkbox" data-k="5c"> Add a rule that selects a different letter text per language field (EN or FR).</label>
+  </div>
+</section>
+
+<section id="m6">
+  <span class="tag">MODULE 6</span>
+  <h2 class="m">Workflow and output channels</h2>
+  <div class="goal"><b>Goal.</b> Build a process that reads a file and produces print, PDF and email output from one template.</div>
+  <p>A <b>workflow</b> (or process) is the chain of steps run for a job. It reads data, maps it, applies layouts, branches, and writes output. This is where "omnichannel" becomes real.</p>
+  <figure>
+    <div class="sv"><svg viewBox="0 0 780 250" role="img" aria-label="A workflow reads input, maps it, branches by customer preference, and writes print, email or archive output">
+      <defs><marker id="a6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect class="acc" x="10" y="95" width="100" height="56" rx="8"/><text class="b" x="60" y="120" text-anchor="middle">Read</text><text class="s" x="60" y="136" text-anchor="middle">input file</text>
+      <path class="ln" d="M110 123 L148 123" marker-end="url(#a6)"/>
+      <rect class="acc" x="150" y="95" width="100" height="56" rx="8"/><text class="b" x="200" y="120" text-anchor="middle">Map</text><text class="s" x="200" y="136" text-anchor="middle">to data model</text>
+      <path class="ln" d="M250 123 L288 123" marker-end="url(#a6)"/>
+      <path class="mk" d="M290 123 L340 83 L390 123 L340 163 Z"/><text class="b" x="340" y="120" text-anchor="middle">Branch</text><text class="s" x="340" y="135" text-anchor="middle">by channel</text>
+      <path class="ln" d="M390 123 L450 40" marker-end="url(#a6)"/><path class="ln" d="M390 123 L450 123" marker-end="url(#a6)"/><path class="ln" d="M390 123 L450 206" marker-end="url(#a6)"/>
+      <text class="s" x="420" y="72" text-anchor="middle">print</text><text class="s" x="420" y="116" text-anchor="middle">email</text><text class="s" x="420" y="190" text-anchor="middle">web</text>
+      <rect class="box" x="452" y="14" width="130" height="52" rx="6"/><text class="b" x="517" y="36" text-anchor="middle">Print layout</text><text class="s" x="517" y="52" text-anchor="middle">PDF/AFP/PCL batch</text>
+      <rect class="box" x="452" y="97" width="130" height="52" rx="6"/><text class="b" x="517" y="119" text-anchor="middle">Email layout</text><text class="s" x="517" y="135" text-anchor="middle">HTML email</text>
+      <rect class="box" x="452" y="180" width="130" height="52" rx="6"/><text class="b" x="517" y="202" text-anchor="middle">Web / portal</text><text class="s" x="517" y="218" text-anchor="middle">HTML page</text>
+      <path class="ln" d="M582 40 L640 123" marker-end="url(#a6)"/><path class="ln" d="M582 123 L640 123" marker-end="url(#a6)"/><path class="ln" d="M582 206 L640 123" marker-end="url(#a6)"/>
+      <rect class="mk" x="642" y="95" width="128" height="56" rx="8"/><text class="b" x="706" y="120" text-anchor="middle">Archive + report</text><text class="s" x="706" y="136" text-anchor="middle">audit trail</text>
+    </svg></div>
+    <figcaption>Each customer's preference decides the branch. All branches end by recording what was sent. The exact step names depend on your version.</figcaption>
+  </figure>
+  <ul>
+    <li><b>Print:</b> output formats (PDF, AFP, PCL, PostScript), sorting, bundling, inserts, mail-piece grouping.</li>
+    <li><b>Email and web:</b> responsive HTML, accessibility, images and links.</li>
+    <li><b>Archive:</b> keep a copy plus metadata so documents can be found and reproduced.</li>
+  </ul>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="6a"> Build a workflow that produces a PDF for every record.</label>
+    <label><input type="checkbox" data-k="6b"> Add a field <code>channel</code> and branch to an HTML email layout for some records.</label>
+    <label><input type="checkbox" data-k="6c"> Produce a small report file listing each document and the channel it used.</label>
+  </div>
+</section>
+
+<section id="m7">
+  <span class="tag">MODULE 7</span>
+  <h2 class="m">Production: running at scale</h2>
+  <div class="goal"><b>Goal.</b> Deploy a project, trigger it three different ways, and read the logs when it fails.</div>
+  <p>Designing a template is one skill. Running a million of them reliably is another. This module is about the production side.</p>
+  <h3>Core topics</h3>
+  <ul>
+    <li><b>Deployment:</b> packaging a project and moving it from dev to test to production.</li>
+    <li><b>Triggers:</b> a folder watcher for batch files, a scheduler, or a REST/web-service call for real time.</li>
+    <li><b>Performance:</b> memory, parallelism, image size, font embedding, how long a run takes per 1,000 documents.</li>
+    <li><b>Operations:</b> queues, retries, monitoring, error files, alerting.</li>
+    <li><b>Security:</b> who may call the service, how personal data is protected, how logs avoid leaking it.</li>
+  </ul>
+  <div class="note"><b>Why it matters.</b> A letter that looks perfect in the designer but takes 4 seconds per page will miss the overnight window for two million customers. Always measure.</div>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="7a"> Deploy your project to a test environment (ask your team how it works there).</label>
+    <label><input type="checkbox" data-k="7b"> Trigger it once with a file and once with an API call.</label>
+    <label><input type="checkbox" data-k="7c"> Run 10,000 copies of one record and time it. Write down documents per second.</label>
+  </div>
+</section>
+
+<section id="m8">
+  <span class="tag">MODULE 8</span>
+  <h2 class="m">Interactive and content management</h2>
+  <div class="goal"><b>Goal.</b> Understand how business users create communications safely, without a developer.</div>
+  <p>Not every document comes from a nightly batch. A claims handler writes a decision letter. A bank adviser prepares a proposal. Interactive tools let them choose approved text blocks, fill in fields and preview the result, while the developer controls what is allowed.</p>
+  <ul>
+    <li><b>Content library:</b> approved paragraphs with owners, versions and approval status.</li>
+    <li><b>Guardrails:</b> fixed regions the user cannot edit, mandatory legal text, limited choices.</li>
+    <li><b>Separation of roles:</b> developers build structure, business users supply words.</li>
+    <li><b>Handoff:</b> what happens after the user clicks "finish": send, store, route for approval.</li>
+  </ul>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="8a"> Identify which of your project's letters are batch, which are on demand, and which are written by hand.</label>
+    <label><input type="checkbox" data-k="8b"> Move one repeated legal paragraph into a shared content block and reuse it in two templates.</label>
+  </div>
+</section>
+
+<section id="m9">
+  <span class="tag">MODULE 9</span>
+  <h2 class="m">Quality: testing, debugging and compliance</h2>
+  <div class="goal"><b>Goal.</b> Be the person whose releases do not cause incidents.</div>
+  <figure>
+    <div class="sv"><svg viewBox="0 0 780 160" role="img" aria-label="A test loop from change to sample data to compare to approval">
+      <defs><marker id="a9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect class="acc" x="10" y="50" width="130" height="56" rx="8"/><text class="b" x="75" y="75" text-anchor="middle">Change</text><text class="s" x="75" y="92" text-anchor="middle">template or rule</text>
+      <path class="ln" d="M140 78 L178 78" marker-end="url(#a9)"/>
+      <rect class="box" x="180" y="50" width="140" height="56" rx="8"/><text class="b" x="250" y="75" text-anchor="middle">Run test set</text><text class="s" x="250" y="92" text-anchor="middle">edge-case records</text>
+      <path class="ln" d="M320 78 L358 78" marker-end="url(#a9)"/>
+      <rect class="box" x="360" y="50" width="140" height="56" rx="8"/><text class="b" x="430" y="75" text-anchor="middle">Compare</text><text class="s" x="430" y="92" text-anchor="middle">to approved output</text>
+      <path class="ln" d="M500 78 L538 78" marker-end="url(#a9)"/>
+      <rect class="mk" x="540" y="50" width="110" height="56" rx="8"/><text class="b" x="595" y="75" text-anchor="middle">Review</text><text class="s" x="595" y="92" text-anchor="middle">business sign-off</text>
+      <path class="ln" d="M650 78 L688 78" marker-end="url(#a9)"/>
+      <rect class="acc" x="690" y="50" width="80" height="56" rx="8"/><text class="b" x="730" y="82" text-anchor="middle">Release</text>
+      <path class="ln" d="M595 106 L595 138 L75 138 L75 108" marker-end="url(#a9)"/><text class="s" x="335" y="154" text-anchor="middle">if anything differs unexpectedly, go back</text>
+    </svg></div>
+    <figcaption>Document tests are mostly visual and data-driven. Keep a stable set of "nasty" records and compare every release against approved output.</figcaption>
+  </figure>
+  <h3>Edge cases to always test</h3>
+  <ul>
+    <li>Very long names and addresses. Missing optional fields. Empty repeating groups.</li>
+    <li>One-line and 200-line tables. Exactly one row over a page boundary.</li>
+    <li>Special characters, accented letters, right-to-left text if relevant.</li>
+    <li>Negative amounts, zero amounts, huge amounts.</li>
+  </ul>
+  <h3>Professional habits</h3>
+  <ul>
+    <li>Use version control and a clear naming convention for every project asset.</li>
+    <li>Keep change notes. Regulated documents often need proof of who changed what.</li>
+    <li>Treat personal data carefully in test files. Use anonymized data.</li>
+    <li>Know accessibility basics (tagged PDF, readable email) if your clients need them.</li>
+  </ul>
+  <div class="ex"><h4>Exercises</h4>
+    <label><input type="checkbox" data-k="9a"> Build a test file of 15 nasty records for your letter.</label>
+    <label><input type="checkbox" data-k="9b"> Save "approved" PDFs and compare after every change.</label>
+    <label><input type="checkbox" data-k="9c"> Write a one-page release checklist for your project.</label>
+  </div>
+</section>
+
+<section id="m10">
+  <span class="tag">MODULE 10</span>
+  <h2 class="m">The expert path</h2>
+  <div class="goal"><b>Goal.</b> Move from "can build it" to "can design it and teach it".</div>
+  <p>Experts differ from competent developers in judgement more than in features. They decide where logic should live, how to keep a hundred templates maintainable, and how to avoid problems before they exist.</p>
+  <div class="tw"><table>
+    <tr><th>Level</th><th>You can</th><th>Proof</th></tr>
+    <tr><td>Beginner</td><td>Follow a tutorial and build a simple letter</td><td>Module 4 done</td></tr>
+    <tr><td>Practitioner</td><td>Build a full job with data, rules, and several outputs</td><td>Module 6 done</td></tr>
+    <tr><td>Professional</td><td>Deploy, tune, troubleshoot, and test it reliably</td><td>Modules 7 and 9 done</td></tr>
+    <tr><td>Expert</td><td>Design reusable solutions, review others, advise on architecture</td><td>You are asked to review other people's work</td></tr>
+  </table></div>
+  <h3>Habits of experts</h3>
+  <ul>
+    <li><b>Reuse by design:</b> shared data models, shared styles, shared content libraries.</li>
+    <li><b>Keep templates thin:</b> clean mapping and rules, simple layouts.</li>
+    <li><b>Know the business:</b> what the regulator requires, what a customer will complain about.</li>
+    <li><b>Read other people's projects.</b> It is the fastest way to learn patterns and mistakes.</li>
+    <li><b>Teach it.</b> Write the internal guide your team lacks.</li>
+  </ul>
+  <h3>Next steps once you finish</h3>
+  <ul>
+    <li>Ask Quadient or a partner about official training and certification for your version.</li>
+    <li>Join the Quadient community or customer forums if you have access.</li>
+    <li>Learn adjacent skills: REST APIs, SQL, a scripting language, basic DevOps.</li>
+    <li>Study related CCM tools. Comparing them sharpens your judgement.</li>
+  </ul>
+  <h3>Self-check questions</h3>
+  <details><summary>Why map data to a model instead of using raw fields in the layout?</summary><p>One place fixes types, formats and naming, so every template stays simple and a source-format change does not break all templates.</p></details>
+  <details><summary>A batch of 1 million letters is too slow. Where do you look?</summary><p>Image sizes, fonts, heavy scripts per record, table logic, output format, and server parallelism. Measure per-document time first.</p></details>
+  <details><summary>Why can't an AI model just write each letter?</summary><p>Legal wording, amounts and dates must be exact and reproducible, volumes are huge, and you need an audit trail. AI can help draft content that a person then approves.</p></details>
+  <details><summary>A customer sees the wrong paragraph. What is your investigation order?</summary><p>Input record, then mapping, then the rule, then the template. Reproduce with that one record and read the logs.</p></details>
+  <div class="ex"><h4>Capstone</h4>
+    <label><input type="checkbox" data-k="10a"> Rebuild your chosen real-world document end to end: data, template, rules, two channels, tests.</label>
+    <label><input type="checkbox" data-k="10b"> Present it to a colleague and explain every design decision.</label>
+  </div>
+</section>
+
+<section id="gloss" style="border-bottom:0">
+  <span class="tag">REFERENCE</span>
+  <h2 class="m">Glossary</h2>
+  <div class="tw"><table>
+    <tr><th>Term</th><th>Meaning</th></tr>
+    <tr><td>CCM</td><td>Customer communications management: producing and delivering customer documents at scale.</td></tr>
+    <tr><td>Data model</td><td>The clean structure of fields your template reads.</td></tr>
+    <tr><td>Mapping</td><td>Converting raw input into the data model.</td></tr>
+    <tr><td>Master page</td><td>A page background that repeats (logo, footer).</td></tr>
+    <tr><td>Flow</td><td>Content that grows and continues across pages.</td></tr>
+    <tr><td>Conditional content</td><td>Content shown only when a rule is true.</td></tr>
+    <tr><td>Workflow / process</td><td>Chain of steps that runs a job.</td></tr>
+    <tr><td>Batch</td><td>Many documents in one scheduled run.</td></tr>
+    <tr><td>Real-time</td><td>One document on request, often via an API.</td></tr>
+    <tr><td>Omnichannel</td><td>Same content, several delivery channels.</td></tr>
+    <tr><td>AFP / PCL / PDF</td><td>Output formats for high-volume printers and digital documents.</td></tr>
+    <tr><td>Production server</td><td>The engine that runs deployed jobs at volume.</td></tr>
+  </table></div>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+  var boxes=[].slice.call(document.querySelectorAll('.ex input[type=checkbox]'));
+  var key='inspire-course-progress';
+  var saved={};
+  try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){}
+  function update(){
+    var n=boxes.filter(function(b){return b.checked}).length;
+    document.getElementById('prog').textContent='Exercises done: '+n+' / '+boxes.length;
+    document.getElementById('barfill').style.width=(boxes.length?n/boxes.length*100:0)+'%';
+  }
+  boxes.forEach(function(b){
+    if(saved[b.dataset.k])b.checked=true;
+    b.addEventListener('change',function(){
+      saved[b.dataset.k]=b.checked;
+      try{localStorage.setItem(key,JSON.stringify(saved))}catch(e){}
+      update();
+    });
+  });
+  update();
+})();
+</script>
+
+</html>
